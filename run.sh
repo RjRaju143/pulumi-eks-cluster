@@ -29,8 +29,9 @@ delete_stack() {
 echo "Pulumi Operations Menu:"
 echo "1. Initialize/create Pulumi-managed infrastructure"
 echo "2. Destroy Pulumi-managed infrastructure"
+echo "3. pulumi cancel"
 
-read -p "Enter your option (1 or 2): " OPTION
+read -p "Enter your option (1, 2, 3): " OPTION
 
 case "$OPTION" in
     1)
@@ -38,6 +39,9 @@ case "$OPTION" in
         ;;
     2)
         delete_stack
+        ;;
+    3)
+        pulumi cancel
         ;;
     *)
         echo "Error: Unknown option '$OPTION'. Please enter either 1 or 2."

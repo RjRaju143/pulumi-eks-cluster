@@ -14,7 +14,7 @@ export const nodeGroupRole = new aws.iam.Role("nodeGroupRole", {
             },
         }],
     }),
-}, { provider });
+}, { provider, dependsOn: cluster });
 
 const policies = [
     "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
@@ -26,7 +26,7 @@ export const rolePolicyAttachments = policies.map((policyArn, index) =>
     new aws.iam.RolePolicyAttachment(`nodeGroupPolicy-${index}`, {
         role: nodeGroupRole.name,
         policyArn,
-    }, { provider })
+    }, { provider, dependsOn: cluster })
 );
 
 export const nodeGroup = new aws.eks.NodeGroup("eksNodeGroup", {

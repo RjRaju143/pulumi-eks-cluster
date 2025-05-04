@@ -9,5 +9,4 @@ export const cluster = new eks.Cluster("cluster", {
     endpointPrivateAccess: utils.cluster.endpointPrivateAccess || false,
     endpointPublicAccess: utils.cluster.endpointPublicAccess || true,
     skipDefaultNodeGroup: utils.cluster.skipDefaultNodeGroup || true,
-}, { provider });
-
+}, { provider, dependsOn: vpc });

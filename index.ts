@@ -7,10 +7,20 @@ export const natGwId = natGateway.id;
 export const publicSubnetsIds = publicSubnets.map(subnet => subnet.id);
 export const privateSubnetsIds = privateSubnets.map(subnet => subnet.id);
 
-//EKS
+//// Upload SSH Keys
+import { sshKey } from "./module/sshkey"
+export const sshkey = sshKey.keyName;
+
+//// OpenVPN Instance in Public Subnet 
+import { eip, instance, securityGroup } from "./module/openvpn"
+export const OpenVpnIP = eip;
+export const OpenVpnInstance = instance;
+export const OpenVpnSecurityGroup = securityGroup;
+
+// //EKS
 import { cluster } from "./module/eks";
-export const kubeconfig = cluster.kubeconfig;
 export const clusterName = cluster.eksCluster.name;
+// export const kubeconfig = cluster.kubeconfig;
 
 // NodeGroup
 import { nodeGroup, nodeGroupRole, rolePolicyAttachments } from "./module/eks";
