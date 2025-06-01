@@ -1,50 +1,60 @@
+import { aws, pulumi } from "./provider";
 
-//// const zones = aws.getAvailabilityZones({ state: "available" });
-///// Then use zones.then(z => z.names[0]) to pick one.
+import dotenv from "dotenv"
+dotenv.config()
+
+const AWS_REGION = process.env.AWS_REGION;
+const ENVIRONMENT = process.env.ENVIRONMENT;
+const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
+const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
+
+const zones = aws.getAvailabilityZones({ state: "available" });
+console.log(zones)
 
 export const utils = {
-    AWS_REGION: process.env.AWS_REGION || "ap-south-1",
-    ENVIRONMENT: process.env.ENVIRONMENT || "dev",
+    AWS_REGION,
+    ENVIRONMENT,
+    AWS_ACCESS_KEY_ID,
+    AWS_SECRET_ACCESS_KEY,
     cluster: {
-        name: `${process.env.ENVIRONMENT}-eks-cluster`,
-        version: "1.32",
-        endpointPrivateAccess: true,
-        endpointPublicAccess: false,
+        name: `${ENVIRONMENT}-eks-cluster`,
+        version: "1.33",
+        endpointPrivateAccess: false,
+        endpointPublicAccess: true,
         skipDefaultNodeGroup: true,
     },
     vpc: {
         cidrBlock: "10.0.0.0/16",
         enableDnsSupport: true,
         enableDnsHostnames: true,
-        tags: { Name: "main-vpc" }
+        tags: { Name: "main-vpc" },
     },
-    subnets: {
+    subnets: pulumi.output(zones).apply(z => ({
         public: [
-            { cidrBlock: "10.0.1.0/24", az: "a", name: "public-subnet-1" },
-            { cidrBlock: "10.0.2.0/24", az: "b", name: "public-subnet-2" }
+            { cidrBlock: "10.0.1.0/24", az: z.names[0], name: "public-subnet-1" },
+            { cidrBlock: "10.0.2.0/24", az: z.names[1], name: "public-subnet-2" },
         ],
         private: [
-            { cidrBlock: "10.0.3.0/24", az: "a", name: "private-subnet-1" },
-            { cidrBlock: "10.0.4.0/24", az: "b", name: "private-subnet-2" }
-        ]
-    },
+            { cidrBlock: "10.0.3.0/24", az: z.names[0], name: "private-subnet-1" },
+            { cidrBlock: "10.0.4.0/24", az: z.names[1], name: "private-subnet-2" },
+        ],
+    })),
     eip: {
-        // vpc: true, // depricated
         domain: "vpc",
     },
     natGateway: {
-        subnetId: "public-subnet-1", // Will reference public subnet later
-        tags: { Name: "nat-gw" }
+        subnetId: "public-subnet-1",
+        tags: { Name: "nat-gw" },
     },
     routeTables: {
         public: {
             routes: [{ cidrBlock: "0.0.0.0/0" }],
-            tags: { Name: "public-rt" }
+            tags: { Name: "public-rt" },
         },
         private: {
             routes: [{ cidrBlock: "0.0.0.0/0" }],
-            tags: { Name: "private-rt" }
-        }
+            tags: { Name: "private-rt" },
+        },
     },
     openvpnEc2: {
         amiId: "ami-01614d815cf856337",
@@ -52,11 +62,8 @@ export const utils = {
         vpnServerPorts: [1194, 443, 80, 22, 943],
         instanceType: "t2.small",
     },
-    sshkey : {
-        openvpn: {
-            name: "open-vpn"
-        },eksNodeGroup:{
-            name: "dev-cluster"
-        }
-    }
+    sshkey: {
+        openvpn: { name: "open-vpn" },
+        eksNodeGroup: { name: "dev-cluster" },
+    },
 };

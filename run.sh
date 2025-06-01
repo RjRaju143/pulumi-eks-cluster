@@ -3,14 +3,16 @@
 set -e
 
 STACK_NAME="dev"
-PROJECT_DIR=$(PWD)
+PROJECT_DIR=$PWD
 export PULUMI_CONFIG_PASSPHRASE=1234
+export PULUMI_K8S_DELETE_UNREACHABLE=true
 
 create_stack() {
     echo "Creating resources with Pulumi..."
     cd $PROJECT_DIR
 
-    pulumi login file://.
+    # pulumi login file://.
+    pulumi login s3://iac-1152/pulumi/
     pulumi up --stack $STACK_NAME
     unset PULUMI_CONFIG_PASSPHRASE
     echo "Pulumi stack created successfully!"

@@ -33,11 +33,11 @@ export const nodeGroup = new aws.eks.NodeGroup("eksNodeGroup", {
     clusterName: cluster.eksCluster.name,
     nodeGroupName: `${utils.cluster.name}-node-group`,
     nodeRoleArn: nodeGroupRole.arn,
-    subnetIds: privateSubnets.map((subnet: any) => subnet.id),
+    subnetIds: privateSubnets.apply(subnets => subnets.map(subnet => subnet.id)),
     // diskSize: 30,
     tags: {
         Name: `${utils.cluster.name}-node-group`,
-        Environment: utils.ENVIRONMENT,
+        Environment: utils.ENVIRONMENT as string,
     },
     scalingConfig: {
         desiredSize: 1,
@@ -50,4 +50,5 @@ export const nodeGroup = new aws.eks.NodeGroup("eksNodeGroup", {
 }, {
     provider,
     dependsOn: rolePolicyAttachments,
-});
+})
+

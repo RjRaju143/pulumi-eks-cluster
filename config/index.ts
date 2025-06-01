@@ -1,3 +1,3 @@
-export { provider, aws, eks } from "./provider";
+export { provider, aws, eks, pulumi } from "./provider";
 export { utils } from "./utils";
 

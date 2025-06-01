@@ -10,24 +10,28 @@ export const igw = new aws.ec2.InternetGateway("igw", {
 }, { provider });
 
 // 3. Public Subnets
-export const publicSubnets = utils.subnets.public.map(subnet =>
-    new aws.ec2.Subnet(subnet.name, {
-        vpcId: vpc.id,
-        cidrBlock: subnet.cidrBlock,
-        availabilityZone: `${utils.AWS_REGION}${subnet.az}`,
-        mapPublicIpOnLaunch: true,
-        tags: { Name: subnet.name }
-    }, { provider })
+export const publicSubnets = utils.subnets.apply(subnets =>
+    subnets.public.map(subnet =>
+        new aws.ec2.Subnet(subnet.name, {
+            vpcId: vpc.id,
+            cidrBlock: subnet.cidrBlock,
+            availabilityZone: subnet.az,  // Already full AZ name like "ap-south-1a"
+            mapPublicIpOnLaunch: true,
+            tags: { Name: subnet.name },
+        }, { provider })
+    )
 );
 
 // 4. Private Subnets
-export const privateSubnets = utils.subnets.private.map(subnet =>
-    new aws.ec2.Subnet(subnet.name, {
-        vpcId: vpc.id,
-        cidrBlock: subnet.cidrBlock,
-        availabilityZone: `${utils.AWS_REGION}${subnet.az}`,
-        tags: { Name: subnet.name }
-    }, { provider })
+export const privateSubnets = utils.subnets.apply(subnets =>
+    subnets.private.map(subnet =>
+        new aws.ec2.Subnet(subnet.name, {
+            vpcId: vpc.id,
+            cidrBlock: subnet.cidrBlock,
+            availabilityZone: subnet.az,  // Already full AZ name
+            tags: { Name: subnet.name },
+        }, { provider })
+    )
 );
 
 // 5. Elastic IP for NAT
