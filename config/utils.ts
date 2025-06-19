@@ -4,7 +4,7 @@ import dotenv from "dotenv"
 dotenv.config()
 
 const AWS_REGION = process.env.AWS_REGION;
-const ENVIRONMENT = process.env.ENVIRONMENT;
+const ENVIRONMENT = process.env.ENVIRONMENT || 'dev';
 const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
 const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
 
@@ -19,6 +19,7 @@ export const utils = {
     cluster: {
         name: `${ENVIRONMENT}-eks-cluster`,
         version: "1.33",
+        publicCluster: true, // Set to false for private cluster
         endpointPrivateAccess: false,
         endpointPublicAccess: true,
         skipDefaultNodeGroup: true,

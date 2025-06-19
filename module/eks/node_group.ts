@@ -1,5 +1,5 @@
 import { utils, aws, provider } from "../../config";
-import { privateSubnets } from "../vpc/vpc"
+import { privateSubnets, publicSubnets } from "../vpc"
 import { cluster } from "./eks"
 
 export const nodeGroupRole = new aws.iam.Role("nodeGroupRole", {
@@ -33,7 +33,7 @@ export const nodeGroup = new aws.eks.NodeGroup("eksNodeGroup", {
     clusterName: cluster.eksCluster.name,
     nodeGroupName: `${utils.cluster.name}-node-group`,
     nodeRoleArn: nodeGroupRole.arn,
-    subnetIds: privateSubnets.apply(subnets => subnets.map(subnet => subnet.id)),
+    subnetIds: (utils.cluster.publicCluster ? publicSubnets : privateSubnets).apply((subnets: aws.ec2.Subnet[]) => subnets.map(subnet => subnet.id)),
     // diskSize: 30,
     tags: {
         Name: `${utils.cluster.name}-node-group`,

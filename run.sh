@@ -12,7 +12,7 @@ create_stack() {
     cd $PROJECT_DIR
 
     # pulumi login file://.
-    pulumi login s3://iac-1152/pulumi/eks-cluster/
+    pulumi login s3://iac-eks-cluster/pulumi/eks-cluster/
     pulumi up --stack $STACK_NAME
     unset PULUMI_CONFIG_PASSPHRASE
     echo "Pulumi stack created successfully!"
